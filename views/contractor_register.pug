@@ -1,0 +1,32 @@
+doctype html
+html
+  head
+    title Building Audit
+    style
+        include style.css
+  body
+    form(action='/register', method='POST')
+       div
+         label(for = "name") Name:
+         input(name = "Name")
+       br
+       div
+         label(for = "emailaddress") Email Id:
+         input(name = "emailaddress")
+       br
+       div
+         label(for = "username") Username:
+         input(name = "username")
+       br
+       div
+         label(for = "password") Password:
+         input(name = "password")
+       br
+       div
+         label(for = "retypepassword") Re-type Password:
+         input(name = "retypepassword")
+       br
+       button(type = "submit") Submit
+    br
+    footer
+      p Copyright &copy; Sri Sanketh Uppalapati & Sameer Killamshetty 2018
