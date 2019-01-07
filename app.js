@@ -2,6 +2,15 @@ const express = require('express');
 const path = require('path');
 var bodyParser = require('body-parser');
 var request = require('request');
+var mysql = require('mysql');
+var connection = mysql.createConnection({
+  host: '',
+  user: '',
+  password: '',
+  database: ''
+})
+
+connection.connect();
 
 const app = express();
 
@@ -18,6 +27,10 @@ app.get('/', function(req, res){
 });
 
 app.get('/owner-register', function(req, res){
+  res.render('owner_register');
+});
+
+app.post('/owner-register', function(req, res){
   res.render('owner_register');
 });
 
