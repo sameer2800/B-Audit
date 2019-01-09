@@ -4,6 +4,13 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  #housebox {
+  border: 15px solid green;
+  padding: 15px;
+  margin: 15px;
+  }
+  </style>
 </head>
 <script>
 function display(status) {
@@ -20,8 +27,12 @@ function display(status) {
 <body onload="display('none')">
   {% if houses  %}
       {% for house in houses%}
-          <p> {{house[2]}} </p>
-          <p> {{house[3]}} </p>
+      <a href="{{ url_for('house', number=house[0]) }}">
+        <div id="housebox">
+          <p> Name: {{house[2]}} </p>
+          <p> Location: {{house[3]}} </p>
+        </div>
+      </a>
       {% endfor %}
   {% elif not houses%}
   <h2> You have not registered any houses, please register!</h2>

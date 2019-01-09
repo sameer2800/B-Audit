@@ -12,13 +12,13 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    house = Column(String)
+    house_id = Column(Integer)
     status = Column(String)
 
-    def __init__(self, name, house, status):
+    def __init__(self, name, house_id, status):
 
         self.name = name
-        self.house = house
+        self.house_id = house_id
         self.status = status
 
 Base.metadata.create_all(engine)

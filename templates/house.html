@@ -4,9 +4,50 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  #devicebox {
+  border: 15px solid green;
+  padding: 15px;
+  margin: 15px;
+  }
+  </style>
 </head>
-<body>
-  {% for device in devices%}
-  {% endfor %}
+<script>
+function display(status) {
+  if (status == 'none') {
+    document.getElementById("device_registration_form").style.display = 'none';
+    document.getElementById('register').style.display = 'block'
+  }
+  else {
+    document.getElementById("device_registration_form").style.display = 'block';
+    document.getElementById('register').style.display = 'none'
+  }
+}
+</script>
+<body onload="display('none')">
+  {% if devices  %}
+      {% for device in devices %}
+      <div id="devicebox">
+          <p> Name: {{device[1]}} </p>
+          <p> Status: {{device[3]}} </p>
+      </div>
+      {% endfor %}
+  {% elif not devices%}
+  <h2> You have not registered any devices, please register!</h2>
+  {% endif %}
+  <div id = "register">
+  <p>Connect more devices by clicking register</p>
+  <button onclick="display('block')"> Register </button>
+  </div>
+  <div id = "device_registration_form">
+  <form action="{{number}}" method="POST">
+  <div>
+    <label for="name"> Name:</label>
+    <input name="name">
+  </div>
+  <br>
+  <button type="submit">Register</button>
+  </form>
+  </div>
 </body>
 </html>

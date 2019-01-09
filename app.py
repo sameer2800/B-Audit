@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from owner_registration import Owner
 from contractor_registration import Contractor
 from house_registration import House
+from device_registration import Device
 import sqlite3
 
 app = Flask(__name__)
@@ -105,9 +106,23 @@ def contractor(username):
     cursor.close()
     return render_template("contractor.html", services = result)
 
-@app.route('/house')
-def house():
-    return render_template("house.html")
+@app.route('/house/<number>', methods=['GET', 'POST'])
+def house(number):
+    if request.method == 'POST':
+        engine = create_engine('sqlite:///devices.db', echo=True)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        device = Device(str(request.form["name"]), int(number), "working")
+        session.add(device)
+        session.commit()
+        session.close()
+
+    conn = sqlite3.connect('devices.db')
+    cursor = conn.cursor()
+    query = 'SELECT * from devices where house_id = \''+str(number)+'\''
+    result = cursor.execute(query).fetchall()
+    cursor.close()
+    return render_template("house.html", number = number, devices = result)
 
 @app.route('/marketplace')
 def marketplace():
