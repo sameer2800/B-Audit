@@ -3,6 +3,7 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
 from owner_registration import Owner
 from contractor_registration import Contractor
+from house_registration import House
 import sqlite3
 
 app = Flask(__name__)
@@ -77,14 +78,23 @@ def contractor_login():
     else:
         return render_template("contractor_login.html")
 
-@app.route('/owner/<username>')
+@app.route('/owner/<username>', methods=['GET', 'POST'])
 def owner(username):
+    if request.method == 'POST':
+        engine = create_engine('sqlite:///houses.db', echo=True)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        house = House(str(username), str(request.form["name"]), str(request.form["location"]))
+        session.add(house)
+        session.commit()
+        session.close()
+
     conn = sqlite3.connect('houses.db')
     cursor = conn.cursor()
     query = 'SELECT * from houses where owner = \''+str(username)+'\''
     result = cursor.execute(query).fetchall()
     cursor.close()
-    return render_template("owner.html", houses = result)
+    return render_template("owner.html", username = username, houses = result)
 
 @app.route('/contractor/<username>')
 def contractor(username):
