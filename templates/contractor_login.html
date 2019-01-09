@@ -6,6 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  <h1>Hello</h1>
+  <form action="/contractor-login" method="POST">
+  <div>
+  <div>
+    <label for="username"> Username:</label>
+    <input name="username">
+  </div>
+  <br>
+  <div>
+    <label for="password"> Password:</label>
+    <input name="password" type="password">
+  </div>
+  <a href="{{url_for('contractor_register')}}"> Have not registered yet!?</a>
+  <br>
+  <button type="submit">Login</button>
+  </form>
 </body>
 </html>
