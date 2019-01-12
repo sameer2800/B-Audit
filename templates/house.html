@@ -5,7 +5,7 @@
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-  #devicebox {
+  .devicebox {
   border: 15px solid green;
   padding: 15px;
   margin: 15px;
@@ -16,20 +16,55 @@
 function display(status) {
   if (status == 'none') {
     document.getElementById("device_registration_form").style.display = 'none';
-    document.getElementById('register').style.display = 'block'
+    document.getElementById('register').style.display = 'block';
   }
   else {
     document.getElementById("device_registration_form").style.display = 'block';
-    document.getElementById('register').style.display = 'none'
+    document.getElementById('register').style.display = 'none';
+  }
+}
+function display_form(number = 'all') {
+  var element = 'service_registration_form';
+  if(number == 'all'){
+    var total = document.getElementsByClassName("devicebox").length;
+    for(var i = 0; i < total; i++){
+      var el = element.concat(i+1);
+      document.getElementById(el).style.display = 'none';
+    }
+  }
+  else{
+    var el = element.concat(number);
+    if(document.getElementById(el).style.display == 'none')
+    {
+      document.getElementById(el).style.display = 'block';
+    }
+    else {
+      document.getElementById(el).style.display = 'none';
+    }
   }
 }
 </script>
-<body onload="display('none')">
+<body onload="display('none');display_form('all')">
   {% if devices  %}
       {% for device in devices %}
-      <div id="devicebox">
+      <div class="devicebox">
           <p> Name: {{device[1]}} </p>
           <p> Status: {{device[3]}} </p>
+          <button onclick="display_form({{device[0]}})">Add Service</button>
+          <div id = "service_registration_form{{device[0]}}">
+          <form action="{{number}}" method="POST">
+          <div>
+            <label for="type"> Type:</label>
+            <input name="type">
+          </div>
+          <div>
+            <label for="cost"> Cost:</label>
+            <input name="cost">
+          </div>
+          <br>
+          <button type="submit">Submit</button>
+          </form>
+          </div>
       </div>
       {% endfor %}
   {% elif not devices%}
