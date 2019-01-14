@@ -4,9 +4,23 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  .servicebox {
+  border: 15px solid green;
+  padding: 15px;
+  margin: 15px;
+  }
+  </style>
 </head>
 <body>
-  <% for services in services %>
-  <% endfor %>
+  {% for service in services %}
+    <div class = "servicebox">
+      <p> Device ID: {{service[1]}} </p>
+      <p> Contractor: {{service[2]}} </p>
+      <p> Type: {{service[3]}} </p>
+      <p> Cost: {{service[4]}} </p>
+      <p> Status: {{service[5]}} </p>
+    </div>
+  {% endfor %}
 </body>
 </html>

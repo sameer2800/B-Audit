@@ -50,9 +50,9 @@ function display_form(number = 'all') {
       <div class="devicebox">
           <p> Name: {{device[1]}} </p>
           <p> Status: {{device[3]}} </p>
-          <button onclick="display_form({{device[0]}})">Add Service</button>
+          <button onclick="display_form({{device[0]}})">Service</button>
           <div id = "service_registration_form{{device[0]}}">
-          <form action="{{number}}" method="POST">
+          <form method="POST">
           <div>
             <label for="type"> Type:</label>
             <input name="type">
@@ -62,6 +62,7 @@ function display_form(number = 'all') {
             <input name="cost">
           </div>
           <br>
+          <input type="hidden" name="device_id" value="{{device[0]}}" />
           <button type="submit">Submit</button>
           </form>
           </div>
@@ -75,7 +76,7 @@ function display_form(number = 'all') {
   <button onclick="display('block')"> Register </button>
   </div>
   <div id = "device_registration_form">
-  <form action="{{number}}" method="POST">
+  <form method="POST">
   <div>
     <label for="name"> Name:</label>
     <input name="name">

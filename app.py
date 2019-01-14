@@ -5,6 +5,7 @@ from owner_registration import Owner
 from contractor_registration import Contractor
 from house_registration import House
 from device_registration import Device
+from service_registration import Service
 import sqlite3
 
 app = Flask(__name__)
@@ -109,13 +110,22 @@ def contractor(username):
 @app.route('/house/<number>', methods=['GET', 'POST'])
 def house(number):
     if request.method == 'POST':
-        engine = create_engine('sqlite:///devices.db', echo=True)
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        device = Device(str(request.form["name"]), int(number), "working")
-        session.add(device)
-        session.commit()
-        session.close()
+        try:
+            engine = create_engine('sqlite:///devices.db', echo=True)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            device = Device(str(request.form["name"]), int(number), "working")
+            session.add(device)
+            session.commit()
+            session.close()
+        except:
+            engine = create_engine('sqlite:///services.db', echo=True)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            device = Service(int(request.form["device_id"]), 'None', str(request.form["type"]), str(request.form["cost"]), "need")
+            session.add(device)
+            session.commit()
+            session.close()
 
     conn = sqlite3.connect('devices.db')
     cursor = conn.cursor()
@@ -128,10 +138,10 @@ def house(number):
 def marketplace():
     conn = sqlite3.connect('services.db')
     cursor = conn.cursor()
-    query = 'SELECT * from services where status = need'
+    query = 'SELECT * from services where status = "need"'
     result = cursor.execute(query).fetchall()
     cursor.close()
-    return render_template("marketplace.html")
+    return render_template("marketplace.html", services = result)
 
 
 if __name__ == "__main__":
