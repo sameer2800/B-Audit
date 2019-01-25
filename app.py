@@ -68,7 +68,7 @@ def contractor_register():
 @app.route('/contractor-login', methods=['GET', 'POST'])
 def contractor_login():
     if request.method == 'POST':
-        conn = sqlite3.connect('owners.db')
+        conn = sqlite3.connect('contractors.db')
         cursor = conn.cursor()
         query = 'SELECT password from contractors where username = \''+str(request.form["username"])+'\''
         result = cursor.execute(query).fetchall()
