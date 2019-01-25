@@ -21,11 +21,11 @@ def owner_register():
         if form["password"] == form["retypepassword"]:
             engine = create_engine('sqlite:///owners.db', echo=True)
             Session = sessionmaker(bind=engine)
-            session = Session()
+            db_session = Session()
             owner = Owner(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]))
-            session.add(owner)
-            session.commit()
-            session.close()
+            db_session.add(owner)
+            db_session.commit()
+            db_session.close()
             return redirect(url_for('owner_login'))
         else:
             return render_template("owner_register.html")
@@ -34,13 +34,16 @@ def owner_register():
 
 @app.route('/owner-login', methods=['GET', 'POST'])
 def owner_login():
-    if request.method == 'POST':
+    if request.method == 'POST' and not session.get('logged_in'):
         conn = sqlite3.connect('owners.db')
         cursor = conn.cursor()
         query = 'SELECT password from owners where username = \''+str(request.form["username"])+'\''
         result = cursor.execute(query).fetchall()
         cursor.close()
         if result[0][0] == request.form["password"]:
+            session['logged_in'] = True
+            session['type'] = 'owner'
+            session['username'] = request.form["username"]
             return redirect(url_for('owner', username = request.form["username"]))
         else:
             return render_template("owner_login.html")
@@ -54,11 +57,11 @@ def contractor_register():
         if form["password"] == form["retypepassword"]:
             engine = create_engine('sqlite:///contractors.db', echo=True)
             Session = sessionmaker(bind=engine)
-            session = Session()
+            db_session = Session()
             contractor = Contractor(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]))
-            session.add(contractor)
-            session.commit()
-            session.close()
+            db_session.add(contractor)
+            db_session.commit()
+            db_session.close()
             return redirect(url_for('contractor_login'))
         else:
             return render_template("contractor_register.html")
@@ -74,6 +77,9 @@ def contractor_login():
         result = cursor.execute(query).fetchall()
         cursor.close()
         if result[0][0] == request.form["password"]:
+            session['logged_in'] = True
+            session['type'] = 'contractor'
+            session['username'] = request.form["username"]
             return redirect(url_for('contractor', username = request.form["username"]))
         else:
             return render_template("contractor_login.html")
@@ -82,14 +88,17 @@ def contractor_login():
 
 @app.route('/owner/<username>', methods=['GET', 'POST'])
 def owner(username):
+    if not session['username'] == username and session['type'] == 'owner':
+        return redirect(url_for(session['type'], username = session["username"]))
+
     if request.method == 'POST':
         engine = create_engine('sqlite:///houses.db', echo=True)
         Session = sessionmaker(bind=engine)
-        session = Session()
+        db_session = Session()
         house = House(str(username), str(request.form["name"]), str(request.form["location"]))
-        session.add(house)
-        session.commit()
-        session.close()
+        db_session.add(house)
+        db_session.commit()
+        db_session.close()
 
     conn = sqlite3.connect('houses.db')
     cursor = conn.cursor()
@@ -100,6 +109,9 @@ def owner(username):
 
 @app.route('/contractor/<username>')
 def contractor(username):
+    if not session['username'] == username and session['type'] == 'contractor':
+        return redirect(url_for(session['type'], username = session["username"]))
+
     conn = sqlite3.connect('services.db')
     cursor = conn.cursor()
     query = 'SELECT * from services where contractor = \''+str(username)+'\''
@@ -113,19 +125,19 @@ def house(number):
         try:
             engine = create_engine('sqlite:///devices.db', echo=True)
             Session = sessionmaker(bind=engine)
-            session = Session()
+            db_session = Session()
             device = Device(str(request.form["name"]), int(number), "working")
-            session.add(device)
-            session.commit()
-            session.close()
+            db_session.add(device)
+            db_session.commit()
+            db_session.close()
         except:
             engine = create_engine('sqlite:///services.db', echo=True)
             Session = sessionmaker(bind=engine)
-            session = Session()
+            db_session = Session()
             device = Service(int(request.form["device_id"]), 'None', str(request.form["type"]), str(request.form["cost"]), "need")
-            session.add(device)
-            session.commit()
-            session.close()
+            db_session.add(device)
+            db_session.commit()
+            db_session.close()
 
     conn = sqlite3.connect('devices.db')
     cursor = conn.cursor()
