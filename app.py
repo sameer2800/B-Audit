@@ -7,6 +7,7 @@ from house_registration import House
 from device_registration import Device
 from service_registration import Service
 import sqlite3
+import os
 
 app = Flask(__name__)
 
@@ -88,8 +89,8 @@ def contractor_login():
 
 @app.route('/owner/<username>', methods=['GET', 'POST'])
 def owner(username):
-    if not session['username'] == username and session['type'] == 'owner':
-        return redirect(url_for(session['type'], username = session["username"]))
+    if not session.get('username') == username and not session.get('type') == 'contractor':
+        return redirect(url_for('homepage'))
 
     if request.method == 'POST':
         engine = create_engine('sqlite:///houses.db', echo=True)
@@ -107,17 +108,32 @@ def owner(username):
     cursor.close()
     return render_template("owner.html", username = username, houses = result)
 
-@app.route('/contractor/<username>')
+@app.route('/contractor/<username>', methods=["GET", "POST"])
 def contractor(username):
-    if not session['username'] == username and session['type'] == 'contractor':
-        return redirect(url_for(session['type'], username = session["username"]))
+    if not session.get('username') == username and not session.get('type') == 'contractor':
+        return redirect(url_for('homepage'))
 
     conn = sqlite3.connect('services.db')
     cursor = conn.cursor()
-    query = 'SELECT * from services where contractor = \''+str(username)+'\''
-    result = cursor.execute(query).fetchall()
+
+    if request.method == "POST":
+        if isinstance(request.form.get("done"), unicode):
+            query = 'UPDATE services SET contractor = \''+session.get("username")+'\', status = "done" WHERE id = \''+request.form["id"]+'\''
+            cursor.execute(query)
+            conn.commit()
+        elif isinstance(request.form.get("remove"), unicode):
+            query = 'UPDATE services SET contractor = "None", status = "need" WHERE id = \''+request.form["id"]+'\''
+            cursor.execute(query)
+            conn.commit()
+
+    query = 'SELECT * from services where contractor = \''+str(username)+'\' and status = "taken"'
+    ongoing_services = cursor.execute(query).fetchall()
+
+    query = 'SELECT * from services where contractor = \''+str(username)+'\' and status = "done"'
+    done_services = cursor.execute(query).fetchall()
+
     cursor.close()
-    return render_template("contractor.html", services = result)
+    return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services)
 
 @app.route('/house/<number>', methods=['GET', 'POST'])
 def house(number):
@@ -146,15 +162,28 @@ def house(number):
     cursor.close()
     return render_template("house.html", number = number, devices = result)
 
-@app.route('/marketplace')
+@app.route('/marketplace', methods = ['GET', 'POST'])
 def marketplace():
+    if not session.get('logged_in'):
+        return redirect(url_for('homepage'))
+
     conn = sqlite3.connect('services.db')
     cursor = conn.cursor()
+    if request.method == 'POST':
+        query = 'UPDATE services SET contractor = \''+session.get("username")+'\', status = "taken" WHERE id = \''+request.form["id"]+'\''
+        cursor.execute(query)
+        conn.commit()
+
     query = 'SELECT * from services where status = "need"'
-    result = cursor.execute(query).fetchall()
+    need_services = cursor.execute(query).fetchall()
+
+    query = 'SELECT * from services where status = "taken"'
+    ongoing_services = cursor.execute(query).fetchall()
+
     cursor.close()
-    return render_template("marketplace.html", services = result)
+    return render_template("marketplace.html", type = session["type"], need_services = need_services, ongoing_services = ongoing_services)
 
 
 if __name__ == "__main__":
+    app.secret_key = os.urandom(12)
     app.run(debug=True)

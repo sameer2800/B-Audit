@@ -13,14 +13,58 @@
   </style>
 </head>
 <body>
-  {% for service in services %}
+  <h2> Need Services</h2>
+  {% for service in need_services %}
     <div class = "servicebox">
-      <p> Device ID: {{service[1]}} </p>
-      <p> Contractor: {{service[2]}} </p>
-      <p> Type: {{service[3]}} </p>
-      <p> Cost: {{service[4]}} </p>
-      <p> Status: {{service[5]}} </p>
-      <button>Take it!</button>
+      {% if type == "contractor" %}
+          <div id = "service_registration_form">
+              <form method="POST">
+              <input type="hidden" name="id" value="{{service[0]}}"
+              <div>
+                <label for="device_id"> Device ID: {{service[1]}} </label>
+                <input type="hidden" name="device_id" value="{{service[1]}}">
+              </div>
+              <br>
+              <div>
+                <label for="contractor"> Contractor: {{service[2]}} </label>
+                <input type="hidden" name="contractor" value="{{service[2]}}">
+              </div>
+              <br>
+              <div>
+                <label for="value"> Type: {{service[3]}} </label>
+                <input type="hidden" name="type" value="{{service[3]}}">
+              </div>
+              <br>
+              <div>
+                <label for="cost"> Cost: {{service[4]}} </label>
+                <input type="hidden" name="cost" value="{{service[4]}}">
+              </div>
+              <br>
+              <div>
+                <label for="status"> Status: {{service[5]}} </label>
+                <input type="hidden" name="status" value="{{service[5]}}">
+              </div>
+              <br>
+              <button type="submit">Take it!</button>
+              </form>
+          </div>
+      {% else %}
+          <p> Device ID: {{service[1]}} </p>
+          <p> Contractor: {{service[2]}} </p>
+          <p> Type: {{service[3]}} </p>
+          <p> Cost: {{service[4]}} </p>
+          <p> Status: {{service[5]}} </p>
+      {% endif %}
+    </div>
+  {% endfor %}
+  <h2> Ongoing Services</h2>
+  {% for service in ongoing_services %}
+    <div class = "servicebox">
+          <p> Device ID: {{service[1]}} </p>
+          <p> Contractor: {{service[2]}} </p>
+          <p> Type: {{service[3]}} </p>
+          <p> Cost: {{service[4]}} </p>
+          <p> Status: {{service[5]}} </p>
     </div>
   {% endfor %}
 </body>
