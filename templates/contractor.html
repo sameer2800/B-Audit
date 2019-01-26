@@ -20,32 +20,39 @@
         <form method="POST">
         <input type="hidden" name="id" value="{{service[0]}}"
         <div>
-          <label for="device_id"> Device ID: {{service[1]}} </label>
-          <input type="hidden" name="device_id" value="{{service[1]}}">
+          <label for="owner"> Owner: {{service[1]}} </label>
+          <input type="hidden" name="owner" value="{{service[1]}}">
+        </div>
+        <div>
+          <label for="house_id"> Owner: {{service[2]}} </label>
+          <input type="hidden" name="house_id" value="{{service[2]}}">
+        </div>
+        <div>
+          <label for="device_id"> Device ID: {{service[3]}} </label>
+          <input type="hidden" name="device_id" value="{{service[3]}}">
         </div>
         <br>
         <div>
-          <label for="contractor"> Contractor: {{service[2]}} </label>
-          <input type="hidden" name="contractor" value="{{service[2]}}">
+          <label for="contractor"> Contractor: {{service[4]}} </label>
+          <input type="hidden" name="contractor" value="{{service[4]}}">
         </div>
         <br>
         <div>
-          <label for="value"> Type: {{service[3]}} </label>
-          <input type="hidden" name="type" value="{{service[3]}}">
+          <label for="value"> Type: {{service[5]}} </label>
+          <input type="hidden" name="type" value="{{service[5]}}">
         </div>
         <br>
         <div>
-          <label for="cost"> Cost: {{service[4]}} </label>
-          <input type="hidden" name="cost" value="{{service[4]}}">
+          <label for="cost"> Cost: {{service[6]}} </label>
+          <input type="hidden" name="cost" value="{{service[6]}}">
         </div>
         <br>
         <div>
-          <label for="status"> Status: {{service[5]}} </label>
-          <input type="hidden" name="status" value="{{service[5]}}">
+          <label for="status"> Status: {{service[7]}} </label>
+          <input type="hidden" name="status" value="{{service[7]}}">
         </div>
         <br>
-        <button type="submit" name="done">Done</button>
-        <button type="submit" name="remove">Remove</button>
+        <button type="submit">Take it!</button>
         </form>
     </div>
   </div>
@@ -53,11 +60,13 @@
   <h2> Done Services</h2>
   {% for service in done_services %}
   <div id="servicebox">
-    <p> Device ID: {{service[1]}} </p>
-    <p> Contractor: {{service[2]}} </p>
-    <p> Type: {{service[3]}} </p>
-    <p> Cost: {{service[4]}} </p>
-    <p> Status: {{service[5]}} </p>
+    <p> Owner: {{service[1]}} </p>
+    <p> House ID: {{service[2]}}</p>
+    <p> Device ID: {{service[3]}} </p>
+    <p> Contractor: {{service[4]}} </p>
+    <p> Type: {{service[5]}} </p>
+    <p> Cost: {{service[6]}} </p>
+    <p> Status: {{service[7]}} </p>
   {% endfor %}
 </body>
 </html>

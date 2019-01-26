@@ -63,10 +63,61 @@ function display_form(number = 'all') {
           </div>
           <br>
           <input type="hidden" name="device_id" value="{{device[0]}}" />
-          <button type="submit">Submit</button>
+          <button type="submit" name="register_service">Submit</button>
           </form>
           </div>
       </div>
+      {% endfor %}
+      <h2> Applied Services</h2>
+      {% for service in applied_services %}
+      <div class = "devicebox">
+          <form method="POST">
+          <input type="hidden" name="id" value="{{service[0]}}">
+          <div>
+            <label for="owner"> Owner: {{service[1]}} </label>
+            <input type="hidden" name="owner" value="{{service[1]}}">
+          </div>
+          <br>
+          <input type="hidden" name="house_id" value="{{service[2]}}">
+          <div>
+            <label for="device_id"> Device ID: {{service[3]}} </label>
+            <input type="hidden" name="device_id" value="{{service[3]}}">
+          </div>
+          <br>
+          <div>
+            <label for="contractor"> Contractor: {{service[4]}} </label>
+            <input type="hidden" name="contractor" value="{{service[4]}}">
+          </div>
+          <br>
+          <div>
+            <label for="value"> Type: {{service[5]}} </label>
+            <input type="hidden" name="type" value="{{service[5]}}">
+          </div>
+          <br>
+          <div>
+            <label for="cost"> Cost: {{service[6]}} </label>
+            <input type="hidden" name="cost" value="{{service[6]}}">
+          </div>
+          <br>
+          <div>
+            <label for="status"> Status: {{service[7]}} </label>
+            <input type="hidden" name="status" value="{{service[7]}}">
+          </div>
+          <br>
+          <button type="submit" name="cancel_service">Cancel</button>
+          </form>
+      </div>
+      {% endfor %}
+      <h2> Ongoing Services</h2>
+      {% for service in ongoing_services %}
+        <div class = "devicebox">
+          <p> Owner: {{service[1]}} </p>
+          <p> Device ID: {{service[3]}} </p>
+          <p> Contractor: {{service[4]}} </p>
+          <p> Type: {{service[5]}} </p>
+          <p> Cost: {{service[6]}} </p>
+          <p> Status: {{service[7]}} </p>
+        </div>
       {% endfor %}
   {% elif not devices%}
   <h2> You have not registered any devices, please register!</h2>
@@ -82,7 +133,7 @@ function display_form(number = 'all') {
     <input name="name">
   </div>
   <br>
-  <button type="submit">Register</button>
+  <button type="submit" name="register_device">Register</button>
   </form>
   </div>
 </body>

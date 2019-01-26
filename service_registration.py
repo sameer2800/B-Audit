@@ -11,14 +11,18 @@ class Service(Base):
     __tablename__ = "services"
 
     id = Column(Integer, primary_key=True)
+    owner = Column(String)
+    house_id = Column(Integer)
     device_id = Column(Integer)
     contractor = Column(String)
     type = Column(String)
     cost = Column(Integer)
     status = Column(String)
 
-    def __init__(self, device_id, contractor, type, cost, status):
+    def __init__(self, owner, house_id, device_id, contractor, type, cost, status):
 
+        self.owner = owner
+        self.house_id = house_id
         self.device_id = device_id
         self.contractor = contractor
         self.type = type

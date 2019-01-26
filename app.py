@@ -100,20 +100,40 @@ def contractor_login():
 def owner(username):
     if session.get('username') == username and session.get('type') == 'owner':
         if request.method == 'POST':
-            engine = create_engine('sqlite:///houses.db', echo=True)
-            Session = sessionmaker(bind=engine)
-            db_session = Session()
-            house = House(str(username), str(request.form["name"]), str(request.form["location"]))
-            db_session.add(house)
-            db_session.commit()
-            db_session.close()
+            if isinstance(request.form.get("register_house"), unicode):
+                engine = create_engine('sqlite:///houses.db', echo=True)
+                Session = sessionmaker(bind=engine)
+                db_session = Session()
+                house = House(str(username), str(request.form["name"]), str(request.form["location"]))
+                db_session.add(house)
+                db_session.commit()
+                db_session.close()
+            elif isinstance(request.form.get("cancel_service"), unicode):
+                conn = sqlite3.connect('services.db')
+                cursor = conn.cursor()
+                query = 'DELETE from services where id = \''+str(request.form["id"])+'\''
+                cursor.execute(query).fetchall()
+                conn.commit()
+                cursor.close()
 
         conn = sqlite3.connect('houses.db')
         cursor = conn.cursor()
         query = 'SELECT * from houses where owner = \''+str(username)+'\''
-        result = cursor.execute(query).fetchall()
+        houses = cursor.execute(query).fetchall()
         cursor.close()
-        return render_template("owner.html", username = username, houses = result)
+
+        conn = sqlite3.connect('services.db')
+        cursor = conn.cursor()
+
+        query = 'SELECT * from services where owner = \''+str(username)+'\' and status = "need"'
+        applied_services = cursor.execute(query).fetchall()
+
+        query = 'SELECT * from services where owner = \''+str(username)+'\' and status = "taken"'
+        ongoing_services = cursor.execute(query).fetchall()
+
+        cursor.close()
+
+        return render_template("owner.html", username = username, houses = houses, applied_services = applied_services, ongoing_services = ongoing_services)
     else:
         return redirect(url_for('homepage'))
 
@@ -151,9 +171,10 @@ def house(number):
     query = 'SELECT owner from houses where id = \''+str(number)+'\''
     result = cursor.execute(query).fetchall()
     cursor.close()
+
     if (result[0][0] == session.get('username') and session.get('type') == 'owner'):
         if request.method == 'POST':
-            try:
+            if isinstance(request.form.get("register_device"), unicode):
                 engine = create_engine('sqlite:///devices.db', echo=True)
                 Session = sessionmaker(bind=engine)
                 db_session = Session()
@@ -161,21 +182,39 @@ def house(number):
                 db_session.add(device)
                 db_session.commit()
                 db_session.close()
-            except:
+            elif isinstance(request.form.get("register_service"), unicode):
                 engine = create_engine('sqlite:///services.db', echo=True)
                 Session = sessionmaker(bind=engine)
                 db_session = Session()
-                device = Service(int(request.form["device_id"]), 'None', str(request.form["type"]), str(request.form["cost"]), "need")
+                device = Service(session.get('username'), int(number), int(request.form["device_id"]), 'None', str(request.form["type"]), str(request.form["cost"]), "need")
                 db_session.add(device)
                 db_session.commit()
                 db_session.close()
+            elif isinstance(request.form.get("cancel_service"), unicode):
+                conn = sqlite3.connect('services.db')
+                cursor = conn.cursor()
+                query = 'DELETE from services where id = \''+str(request.form["id"])+'\''
+                cursor.execute(query).fetchall()
+                conn.commit()
+                cursor.close()
 
         conn = sqlite3.connect('devices.db')
         cursor = conn.cursor()
         query = 'SELECT * from devices where house_id = \''+str(number)+'\''
-        result = cursor.execute(query).fetchall()
+        devices = cursor.execute(query).fetchall()
         cursor.close()
-        return render_template("house.html", number = number, devices = result)
+
+        conn = sqlite3.connect('services.db')
+        cursor = conn.cursor()
+
+        query = 'SELECT * from services where house_id = \''+str(number)+'\' and status = "need"'
+        applied_services = cursor.execute(query).fetchall()
+
+        query = 'SELECT * from services where house_id = \''+str(number)+'\' and status = "taken"'
+        ongoing_services = cursor.execute(query).fetchall()
+
+        cursor.close()
+        return render_template("house.html", number = number, devices = devices, applied_services = applied_services, ongoing_services = ongoing_services)
     else:
         return redirect(url_for('homepage'))
     if request.method == 'POST':
