@@ -13,7 +13,10 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    return render_template("index.html")
+    if session.get('logged_in'):
+        return redirect(url_for(session.get('type'), username = session.get('username')))
+    else:
+        return render_template("index.html")
 
 @app.route('/owner-register', methods=['GET', 'POST'])
 def owner_register():
@@ -35,7 +38,7 @@ def owner_register():
 
 @app.route('/owner-login', methods=['GET', 'POST'])
 def owner_login():
-    if request.method == 'POST' and not session.get('logged_in'):
+    if request.method == 'POST' and session.get('logged_in') is None:
         conn = sqlite3.connect('owners.db')
         cursor = conn.cursor()
         query = 'SELECT password from owners where username = \''+str(request.form["username"])+'\''
@@ -49,7 +52,10 @@ def owner_login():
         else:
             return render_template("owner_login.html")
     else:
-        return render_template("owner_login.html")
+        if session.get('logged_in'):
+            return redirect(url_for('homepage'))
+        else:
+            return render_template("owner_login.html")
 
 @app.route('/contractor-register', methods=['GET', 'POST'])
 def contractor_register():
@@ -71,7 +77,7 @@ def contractor_register():
 
 @app.route('/contractor-login', methods=['GET', 'POST'])
 def contractor_login():
-    if request.method == 'POST':
+    if request.method == 'POST' and session.get('logged_in') is None:
         conn = sqlite3.connect('contractors.db')
         cursor = conn.cursor()
         query = 'SELECT password from contractors where username = \''+str(request.form["username"])+'\''
@@ -85,58 +91,93 @@ def contractor_login():
         else:
             return render_template("contractor_login.html")
     else:
-        return render_template("contractor_login.html")
+        if session.get('logged_in'):
+            return redirect(url_for('homepage'))
+        else:
+            return render_template("contractor_login.html")
 
 @app.route('/owner/<username>', methods=['GET', 'POST'])
 def owner(username):
-    if not session.get('username') == username and not session.get('type') == 'contractor':
+    if session.get('username') == username and session.get('type') == 'owner':
+        if request.method == 'POST':
+            engine = create_engine('sqlite:///houses.db', echo=True)
+            Session = sessionmaker(bind=engine)
+            db_session = Session()
+            house = House(str(username), str(request.form["name"]), str(request.form["location"]))
+            db_session.add(house)
+            db_session.commit()
+            db_session.close()
+
+        conn = sqlite3.connect('houses.db')
+        cursor = conn.cursor()
+        query = 'SELECT * from houses where owner = \''+str(username)+'\''
+        result = cursor.execute(query).fetchall()
+        cursor.close()
+        return render_template("owner.html", username = username, houses = result)
+    else:
         return redirect(url_for('homepage'))
-
-    if request.method == 'POST':
-        engine = create_engine('sqlite:///houses.db', echo=True)
-        Session = sessionmaker(bind=engine)
-        db_session = Session()
-        house = House(str(username), str(request.form["name"]), str(request.form["location"]))
-        db_session.add(house)
-        db_session.commit()
-        db_session.close()
-
-    conn = sqlite3.connect('houses.db')
-    cursor = conn.cursor()
-    query = 'SELECT * from houses where owner = \''+str(username)+'\''
-    result = cursor.execute(query).fetchall()
-    cursor.close()
-    return render_template("owner.html", username = username, houses = result)
 
 @app.route('/contractor/<username>', methods=["GET", "POST"])
 def contractor(username):
-    if not session.get('username') == username and not session.get('type') == 'contractor':
+    if session.get('username') == username and session.get('type') == 'contractor':
+        conn = sqlite3.connect('services.db')
+        cursor = conn.cursor()
+
+        if request.method == "POST":
+            if isinstance(request.form.get("done"), unicode):
+                query = 'UPDATE services SET contractor = \''+session.get("username")+'\', status = "done" WHERE id = \''+request.form["id"]+'\''
+                cursor.execute(query)
+                conn.commit()
+            elif isinstance(request.form.get("remove"), unicode):
+                query = 'UPDATE services SET contractor = "None", status = "need" WHERE id = \''+request.form["id"]+'\''
+                cursor.execute(query)
+                conn.commit()
+
+        query = 'SELECT * from services where contractor = \''+str(username)+'\' and status = "taken"'
+        ongoing_services = cursor.execute(query).fetchall()
+
+        query = 'SELECT * from services where contractor = \''+str(username)+'\' and status = "done"'
+        done_services = cursor.execute(query).fetchall()
+
+        cursor.close()
+        return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services)
+    else:
         return redirect(url_for('homepage'))
-
-    conn = sqlite3.connect('services.db')
-    cursor = conn.cursor()
-
-    if request.method == "POST":
-        if isinstance(request.form.get("done"), unicode):
-            query = 'UPDATE services SET contractor = \''+session.get("username")+'\', status = "done" WHERE id = \''+request.form["id"]+'\''
-            cursor.execute(query)
-            conn.commit()
-        elif isinstance(request.form.get("remove"), unicode):
-            query = 'UPDATE services SET contractor = "None", status = "need" WHERE id = \''+request.form["id"]+'\''
-            cursor.execute(query)
-            conn.commit()
-
-    query = 'SELECT * from services where contractor = \''+str(username)+'\' and status = "taken"'
-    ongoing_services = cursor.execute(query).fetchall()
-
-    query = 'SELECT * from services where contractor = \''+str(username)+'\' and status = "done"'
-    done_services = cursor.execute(query).fetchall()
-
-    cursor.close()
-    return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services)
 
 @app.route('/house/<number>', methods=['GET', 'POST'])
 def house(number):
+    conn = sqlite3.connect('houses.db')
+    cursor = conn.cursor()
+    query = 'SELECT owner from houses where id = \''+str(number)+'\''
+    result = cursor.execute(query).fetchall()
+    cursor.close()
+    if (result[0][0] == session.get('username') and session.get('type') == 'owner'):
+        if request.method == 'POST':
+            try:
+                engine = create_engine('sqlite:///devices.db', echo=True)
+                Session = sessionmaker(bind=engine)
+                db_session = Session()
+                device = Device(str(request.form["name"]), int(number), "working")
+                db_session.add(device)
+                db_session.commit()
+                db_session.close()
+            except:
+                engine = create_engine('sqlite:///services.db', echo=True)
+                Session = sessionmaker(bind=engine)
+                db_session = Session()
+                device = Service(int(request.form["device_id"]), 'None', str(request.form["type"]), str(request.form["cost"]), "need")
+                db_session.add(device)
+                db_session.commit()
+                db_session.close()
+
+        conn = sqlite3.connect('devices.db')
+        cursor = conn.cursor()
+        query = 'SELECT * from devices where house_id = \''+str(number)+'\''
+        result = cursor.execute(query).fetchall()
+        cursor.close()
+        return render_template("house.html", number = number, devices = result)
+    else:
+        return redirect(url_for('homepage'))
     if request.method == 'POST':
         try:
             engine = create_engine('sqlite:///devices.db', echo=True)
