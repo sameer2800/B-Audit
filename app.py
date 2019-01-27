@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask_bootstrap import Bootstrap
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
 from owner_registration import Owner
@@ -10,6 +11,7 @@ import sqlite3
 import os
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
 @app.route('/')
 def homepage():
@@ -262,6 +264,11 @@ def marketplace():
 
     cursor.close()
     return render_template("marketplace.html", type = session["type"], need_services = need_services, ongoing_services = ongoing_services)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('homepage'))
 
 
 if __name__ == "__main__":
