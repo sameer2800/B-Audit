@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
   <style>
   #housebox {
   border: 15px solid green;
@@ -25,18 +29,35 @@ function display(status) {
 }
 </script>
 <body onload="display('none')">
+  <nav class="navbar navbar-expand-sm bg-light">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href = "{{url_for('owner', username = username)}}">Dashboard</a>
+    </div>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="{{url_for('marketplace')}}">Marketplace</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}">Logout</a></li>
+    </ul>
+  </div>
+</nav>
   {% if houses  %}
-      {% for house in houses%}
-      <a href="{{ url_for('house', number=house[0]) }}">
-        <div id="housebox">
-          <p> Name: {{house[2]}} </p>
-          <p> Location: {{house[3]}} </p>
+      <h2>Houses</h2>
+      <div class="card-deck">
+        {% for house in houses%}
+        <div class="card" style="width:400px">
+          <img class="card-img-top" src="img_avatar1.png" alt="House image" style="width:100%">
+          <div class="card-body">
+            <h4 class="card-title">{{house[2]}}</h4>
+            <p> Location: {{house[3]}} </p>
+            <a href="{{ url_for('house', number=house[0]) }}" class="btn btn-primary">Check house</a>
+          </div>
         </div>
-      </a>
-      {% endfor %}
+        {% endfor %}
+      </div>
       <h2> Applied Services</h2>
+      <div class="card-deck">
       {% for service in applied_services %}
-      <div id = "housebox">
+      <div class = "card">
           <form method="POST">
           <input type="hidden" name="id" value="{{service[0]}}">
           <div>
@@ -78,18 +99,23 @@ function display(status) {
           </form>
       </div>
       {% endfor %}
+    </div>
       <h2> Ongoing Services</h2>
+      <div class="card-deck">
       {% for service in ongoing_services %}
-        <div id = "housebox">
-          <p> Owner: {{service[1]}} </p>
-          <p> House ID: {{service[2]}}</p>
-          <p> Device ID: {{service[3]}} </p>
-          <p> Contractor: {{service[4]}} </p>
-          <p> Type: {{service[5]}} </p>
-          <p> Cost: {{service[6]}} </p>
-          <p> Status: {{service[7]}} </p>
+        <div class = "card">
+          <div class = "card-body">
+              <p> Owner: {{service[1]}} </p>
+              <p> House ID: {{service[2]}}</p>
+              <p> Device ID: {{service[3]}} </p>
+              <p> Contractor: {{service[4]}} </p>
+              <p> Type: {{service[5]}} </p>
+              <p> Cost: {{service[6]}} </p>
+              <p> Status: {{service[7]}} </p>
+          </div>
         </div>
       {% endfor %}
+    </div>
   {% elif not houses%}
   <h2> You have not registered any houses, please register!</h2>
   {% endif %}

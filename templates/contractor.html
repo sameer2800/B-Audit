@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
   <style>
   #servicebox {
   border: 15px solid green;
@@ -13,9 +17,21 @@
   </style>
 </head>
 <body>
+  <nav class="navbar navbar-expand-sm bg-light">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href = "{{url_for('contractor', username = username)}}">Dashboard</a>
+    </div>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="{{url_for('marketplace')}}">Marketplace</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}">Logout</a></li>
+    </ul>
+  </div>
+  </nav>
   <h2> Ongoing Services</h2>
+  <div class = "card-deck">
   {% for service in ongoing_services %}
-  <div id="servicebox">
+  <div class="card">
     <div id = "service_registration_form">
         <form method="POST">
         <input type="hidden" name="id" value="{{service[0]}}"
@@ -52,14 +68,17 @@
           <input type="hidden" name="status" value="{{service[7]}}">
         </div>
         <br>
-        <button type="submit">Take it!</button>
+        <button type="submit" name="done">Done</button>
+        <button type="submit" name="remove">Remove</button>
         </form>
     </div>
   </div>
   {% endfor %}
+  </div>
   <h2> Done Services</h2>
+  <div class = "card-deck">
   {% for service in done_services %}
-  <div id="servicebox">
+  <div class="card">
     <p> Owner: {{service[1]}} </p>
     <p> House ID: {{service[2]}}</p>
     <p> Device ID: {{service[3]}} </p>
@@ -68,5 +87,6 @@
     <p> Cost: {{service[6]}} </p>
     <p> Status: {{service[7]}} </p>
   {% endfor %}
+  </div>
 </body>
 </html>

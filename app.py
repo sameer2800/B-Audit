@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from flask_bootstrap import Bootstrap
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
 from owner_registration import Owner
@@ -11,7 +10,6 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-bootstrap = Bootstrap(app)
 
 @app.route('/')
 def homepage():
@@ -216,33 +214,9 @@ def house(number):
         ongoing_services = cursor.execute(query).fetchall()
 
         cursor.close()
-        return render_template("house.html", number = number, devices = devices, applied_services = applied_services, ongoing_services = ongoing_services)
+        return render_template("house.html", username = session.get("username"), number = number, devices = devices, applied_services = applied_services, ongoing_services = ongoing_services)
     else:
         return redirect(url_for('homepage'))
-    if request.method == 'POST':
-        try:
-            engine = create_engine('sqlite:///devices.db', echo=True)
-            Session = sessionmaker(bind=engine)
-            db_session = Session()
-            device = Device(str(request.form["name"]), int(number), "working")
-            db_session.add(device)
-            db_session.commit()
-            db_session.close()
-        except:
-            engine = create_engine('sqlite:///services.db', echo=True)
-            Session = sessionmaker(bind=engine)
-            db_session = Session()
-            device = Service(int(request.form["device_id"]), 'None', str(request.form["type"]), str(request.form["cost"]), "need")
-            db_session.add(device)
-            db_session.commit()
-            db_session.close()
-
-    conn = sqlite3.connect('devices.db')
-    cursor = conn.cursor()
-    query = 'SELECT * from devices where house_id = \''+str(number)+'\''
-    result = cursor.execute(query).fetchall()
-    cursor.close()
-    return render_template("house.html", number = number, devices = result)
 
 @app.route('/marketplace', methods = ['GET', 'POST'])
 def marketplace():
@@ -263,7 +237,7 @@ def marketplace():
     ongoing_services = cursor.execute(query).fetchall()
 
     cursor.close()
-    return render_template("marketplace.html", type = session["type"], need_services = need_services, ongoing_services = ongoing_services)
+    return render_template("marketplace.html", type = session.get("type"), username = session.get("username"), need_services = need_services, ongoing_services = ongoing_services)
 
 @app.route('/logout')
 def logout():

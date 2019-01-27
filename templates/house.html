@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
   <style>
   .devicebox {
   border: 15px solid green;
@@ -45,9 +49,23 @@ function display_form(number = 'all') {
 }
 </script>
 <body onload="display('none');display_form('all')">
+  <nav class="navbar navbar-expand-sm bg-light">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href = "{{url_for('owner', username = username)}}">Dashboard</a>
+    </div>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="{{url_for('marketplace')}}">Marketplace</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}">Logout</a></li>
+    </ul>
+  </div>
+  </nav>
+  <h2> Devices</h2>
   {% if devices  %}
+      <div class = "card-deck">
       {% for device in devices %}
-      <div class="devicebox">
+      <div class="card">
+        <img class="card-img-top" src="img_avatar1.png" alt="Device image" style="width:100%">
           <p> Name: {{device[1]}} </p>
           <p> Status: {{device[3]}} </p>
           <button onclick="display_form({{device[0]}})">Service</button>
@@ -68,9 +86,11 @@ function display_form(number = 'all') {
           </div>
       </div>
       {% endfor %}
+      </div>
       <h2> Applied Services</h2>
+      <div class = "card-deck">
       {% for service in applied_services %}
-      <div class = "devicebox">
+      <div class = "card">
           <form method="POST">
           <input type="hidden" name="id" value="{{service[0]}}">
           <div>
@@ -108,9 +128,11 @@ function display_form(number = 'all') {
           </form>
       </div>
       {% endfor %}
+      </div>
       <h2> Ongoing Services</h2>
+      <div class = "card-deck">
       {% for service in ongoing_services %}
-        <div class = "devicebox">
+        <div class = "card">
           <p> Owner: {{service[1]}} </p>
           <p> Device ID: {{service[3]}} </p>
           <p> Contractor: {{service[4]}} </p>
@@ -119,6 +141,7 @@ function display_form(number = 'all') {
           <p> Status: {{service[7]}} </p>
         </div>
       {% endfor %}
+      </div>
   {% elif not devices%}
   <h2> You have not registered any devices, please register!</h2>
   {% endif %}

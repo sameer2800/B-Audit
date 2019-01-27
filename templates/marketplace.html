@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
   <style>
   .servicebox {
   border: 15px solid green;
@@ -13,9 +17,21 @@
   </style>
 </head>
 <body>
+  <nav class="navbar navbar-expand-sm bg-light">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href = "{{url_for(type, username = username)}}">Dashboard</a>
+    </div>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="{{url_for('marketplace')}}">Marketplace</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}">Logout</a></li>
+    </ul>
+  </div>
+  </nav>
   <h2> Need Services</h2>
+  <div class = "card-deck">
   {% for service in need_services %}
-    <div class = "servicebox">
+    <div class = "card">
       {% if type == "contractor" %}
           <div id = "service_registration_form">
               <form method="POST">
@@ -67,9 +83,11 @@
       {% endif %}
     </div>
   {% endfor %}
+  </div>
   <h2> Ongoing Services</h2>
+  <div class = "card-deck">
   {% for service in ongoing_services %}
-    <div class = "servicebox">
+    <div class = "card">
       <p> Owner: {{service[1]}} </p>
       <p> House ID: {{service[2]}}</p>
       <p> Device ID: {{service[3]}} </p>
@@ -79,5 +97,6 @@
       <p> Status: {{service[7]}} </p>
     </div>
   {% endfor %}
+  </div>
 </body>
 </html>
