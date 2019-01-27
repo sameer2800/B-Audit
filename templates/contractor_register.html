@@ -4,35 +4,44 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
 </head>
 <body>
-  <form action="/contractor-register" method="POST">
-  <div>
+  <div class = "card">
+  <h5 class="card-header info-color white-text text-center py-4">
+      <strong>Register</strong>
+  </h5>
+  <form class="text-center" action="/contractor-register" method="POST">
+  <div class = "form-group">
     <label for="name"> Name:</label>
     <input name="name">
   </div>
   <br>
-  <div>
+  <div class = "form-group">
     <label for="emailaddress"> Email Address:</label>
     <input name="emailaddress">
   </div>
   <br>
-  <div>
+  <div class = "form-group">
     <label for="username"> Username:</label>
     <input name="username">
   </div>
   <br>
-  <div>
+  <div class = "form-group">
     <label for="password"> Password:</label>
     <input name="password" type="password">
   </div>
   <br>
-  <div>
+  <div class = "form-group">
     <label for="retypepassword"> Re-type Password:</label>
     <input name="retypepassword" type="password">
   </div>
   <br>
   <button type="submit">Register</button>
   </form>
+  </div>
 </body>
 </html>

@@ -4,14 +4,17 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
 </head>
 <body>
+  <div class = "text-center">
   <h1>Welcome to Building Audit</h1>
   <br>
-  <button type="button" onclick="window.location.href='{{url_for('owner_login')}}'">Login as Owner</button>
-  <button type="button" onclick="window.location.href='{{url_for('contractor_login')}}'">Login as Contractor</button>
-  <footer>
-      <p> Copyright &copy; Sri Sanketh Uppalapati & Sameer Killamshetty 2018 </p>
-  </footer>
+  <a href="{{url_for('owner_login')}}" class="btn btn-primary">Login as Owner</a>
+  <a href="{{url_for('contractor_login')}}" class="btn btn-primary">Login as Contractor</a>
+  </div>
 </body>
 </html>

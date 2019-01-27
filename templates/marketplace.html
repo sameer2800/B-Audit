@@ -36,40 +36,40 @@
           <div id = "service_registration_form">
               <form method="POST">
               <input type="hidden" name="id" value="{{service[0]}}"
-              <div>
+              <div class = "form-group">
                 <label for="owner"> Owner: {{service[1]}} </label>
                 <input type="hidden" name="owner" value="{{service[1]}}">
               </div>
-              <div>
+              <div class = "form-group">
                 <label for="house_id"> Owner: {{service[2]}} </label>
                 <input type="hidden" name="house_id" value="{{service[2]}}">
               </div>
-              <div>
+              <div class = "form-group">
                 <label for="device_id"> Device ID: {{service[3]}} </label>
                 <input type="hidden" name="device_id" value="{{service[3]}}">
               </div>
               <br>
-              <div>
+              <div class = "form-group">
                 <label for="contractor"> Contractor: {{service[4]}} </label>
                 <input type="hidden" name="contractor" value="{{service[4]}}">
               </div>
               <br>
-              <div>
+              <div class = "form-group">
                 <label for="value"> Type: {{service[5]}} </label>
                 <input type="hidden" name="type" value="{{service[5]}}">
               </div>
               <br>
-              <div>
+              <div class = "form-group">
                 <label for="cost"> Cost: {{service[6]}} </label>
                 <input type="hidden" name="cost" value="{{service[6]}}">
               </div>
               <br>
-              <div>
+              <div class = "form-group">
                 <label for="status"> Status: {{service[7]}} </label>
                 <input type="hidden" name="status" value="{{service[7]}}">
               </div>
               <br>
-              <button type="submit">Take it!</button>
+              <button type="submit" class="btn btn-primary">Take it!</button>
               </form>
           </div>
       {% else %}

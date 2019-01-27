@@ -4,22 +4,30 @@
   <meta charset="utf-8">
   <title>Building Audit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
 </head>
 <body>
-  <form action="/contractor-login" method="POST">
-  <div>
-  <div>
+  <div class = "card">
+  <h5 class="card-header info-color white-text text-center py-4">
+      <strong>Log in</strong>
+  </h5>
+  <form class="text-center" action="/contractor-login" method="POST">
+  <div class = "form-group">
     <label for="username"> Username:</label>
     <input name="username">
   </div>
   <br>
-  <div>
+  <div class = "form-group">
     <label for="password"> Password:</label>
     <input name="password" type="password">
   </div>
   <a href="{{url_for('contractor_register')}}"> Have not registered yet!?</a>
   <br>
-  <button type="submit">Login</button>
+  <button type="submit" class="btn btn-primary">Login</button>
+  </div>
   </form>
 </body>
 </html>

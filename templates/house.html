@@ -81,7 +81,7 @@ function display_form(number = 'all') {
           </div>
           <br>
           <input type="hidden" name="device_id" value="{{device[0]}}" />
-          <button type="submit" name="register_service">Submit</button>
+          <button type="submit" name="register_service" class="btn btn-primary">Submit</button>
           </form>
           </div>
       </div>
@@ -124,7 +124,7 @@ function display_form(number = 'all') {
             <input type="hidden" name="status" value="{{service[7]}}">
           </div>
           <br>
-          <button type="submit" name="cancel_service">Cancel</button>
+          <button type="submit" name="cancel_service" class="btn btn-primary">Cancel</button>
           </form>
       </div>
       {% endfor %}
@@ -147,7 +147,7 @@ function display_form(number = 'all') {
   {% endif %}
   <div id = "register">
   <p>Connect more devices by clicking register</p>
-  <button onclick="display('block')"> Register </button>
+  <button onclick="display('block')" class="btn btn-primary"> Register </button>
   </div>
   <div id = "device_registration_form">
   <form method="POST">
@@ -156,7 +156,7 @@ function display_form(number = 'all') {
     <input name="name">
   </div>
   <br>
-  <button type="submit" name="register_device">Register</button>
+  <button type="submit" name="register_device" class="btn btn-primary">Register</button>
   </form>
   </div>
 </body>
