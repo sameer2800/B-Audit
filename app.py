@@ -108,6 +108,27 @@ def owner(username):
                 db_session.add(house)
                 db_session.commit()
                 db_session.close()
+            elif isinstance(request.form.get("cancel_house"), unicode):
+                conn = sqlite3.connect('houses.db')
+                cursor = conn.cursor()
+                query = 'DELETE from houses where id = \''+str(request.form["house_id"])+'\''
+                cursor.execute(query).fetchall()
+                conn.commit()
+                cursor.close()
+
+                conn = sqlite3.connect('devices.db')
+                cursor = conn.cursor()
+                query = 'DELETE from devices where house_id = \''+str(request.form["house_id"])+'\''
+                cursor.execute(query).fetchall()
+                conn.commit()
+                cursor.close()
+
+                conn = sqlite3.connect('services.db')
+                cursor = conn.cursor()
+                query = 'DELETE from services where house_id = \''+str(request.form["house_id"])+'\''
+                cursor.execute(query).fetchall()
+                conn.commit()
+                cursor.close()
             elif isinstance(request.form.get("cancel_service"), unicode):
                 conn = sqlite3.connect('services.db')
                 cursor = conn.cursor()
@@ -160,7 +181,7 @@ def contractor(username):
         done_services = cursor.execute(query).fetchall()
 
         cursor.close()
-        return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services)
+        return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services, username = username)
     else:
         return redirect(url_for('homepage'))
 
@@ -194,6 +215,20 @@ def house(number):
                 conn = sqlite3.connect('services.db')
                 cursor = conn.cursor()
                 query = 'DELETE from services where id = \''+str(request.form["id"])+'\''
+                cursor.execute(query).fetchall()
+                conn.commit()
+                cursor.close()
+            elif isinstance(request.form.get("cancel_device"), unicode):
+                conn = sqlite3.connect('devices.db')
+                cursor = conn.cursor()
+                query = 'DELETE from devices where id = \''+str(request.form["device_id"])+'\''
+                cursor.execute(query).fetchall()
+                conn.commit()
+                cursor.close()
+
+                conn = sqlite3.connect('services.db')
+                cursor = conn.cursor()
+                query = 'DELETE from services where device_id = \''+str(request.form["device_id"])+'\''
                 cursor.execute(query).fetchall()
                 conn.commit()
                 cursor.close()

@@ -45,6 +45,12 @@ function display(status) {
       <div class="card-deck">
         {% for house in houses%}
         <div class="card" style="width:400px">
+          <form method="POST">
+          <input type="hidden" name="house_id" value="{{house[0]}}" />
+          <button type="submit" name = "cancel_house" class="close btn btn-secondary ml-auto" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+          </form>
           <img class="card-img-top" src="img_avatar1.png" alt="House image" style="width:100%">
           <div class="card-body">
             <h4 class="card-title">{{house[2]}}</h4>
