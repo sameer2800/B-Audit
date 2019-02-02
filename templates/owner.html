@@ -42,9 +42,9 @@ function display(status) {
 </nav>
   {% if houses  %}
       <h2>Houses</h2>
-      <div class="card-deck">
+      <div class="row">
         {% for house in houses%}
-        <div class="card" style="width:400px">
+        <div class="card col-md-6">
           <form method="POST">
           <input type="hidden" name="house_id" value="{{house[0]}}" />
           <button type="submit" name = "cancel_house" class="close btn btn-secondary ml-auto" aria-label="Close">
@@ -61,9 +61,9 @@ function display(status) {
         {% endfor %}
       </div>
       <h2> Applied Services</h2>
-      <div class="card-deck">
+      <div class="row">
       {% for service in applied_services %}
-      <div class = "card">
+      <div class = "card col-md-6">
           <form method="POST">
           <input type="hidden" name="id" value="{{service[0]}}">
           <div>
@@ -107,9 +107,9 @@ function display(status) {
       {% endfor %}
     </div>
       <h2> Ongoing Services</h2>
-      <div class="card-deck">
+      <div class="row">
       {% for service in ongoing_services %}
-        <div class = "card">
+        <div class = "card col-md-6">
           <div class = "card-body">
               <p> Owner: {{service[1]}} </p>
               <p> House ID: {{service[2]}}</p>

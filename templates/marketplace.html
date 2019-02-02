@@ -29,9 +29,9 @@
   </div>
   </nav>
   <h2> Need Services</h2>
-  <div class = "card-deck">
+  <div class = "row">
   {% for service in need_services %}
-    <div class = "card">
+    <div class = "card col-md-6">
       {% if type == "contractor" %}
           <div id = "service_registration_form">
               <form method="POST">
@@ -85,9 +85,9 @@
   {% endfor %}
   </div>
   <h2> Ongoing Services</h2>
-  <div class = "card-deck">
+  <div class = "row">
   {% for service in ongoing_services %}
-    <div class = "card">
+    <div class = "card col-md-6">
       <p> Owner: {{service[1]}} </p>
       <p> House ID: {{service[2]}}</p>
       <p> Device ID: {{service[3]}} </p>
