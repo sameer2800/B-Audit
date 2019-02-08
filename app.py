@@ -253,6 +253,36 @@ def house(number):
     else:
         return redirect(url_for('homepage'))
 
+@app.route('/house-registration', methods = ['GET', 'POST'])
+def house_registration():
+    if session.get('logged_in') == True and session.get('type') == 'owner':
+        if request.method == 'POST':
+            return redirect(url_for('homepage'))
+        else:
+            return render_template("house_registration.html")
+    else:
+        return redirect(url_for('homepage'))
+
+@app.route('/device-registration', methods = ['GET', 'POST'])
+def device_registration():
+    if session.get('logged_in') == True and session.get('type') == 'owner':
+        if request.method == 'POST':
+            return redirect(url_for('homepage'))
+        else:
+            return render_template("device_registration.html")
+    else:
+        return redirect(url_for('homepage'))
+
+@app.route('/service-registration', methods = ['GET', 'POST'])
+def service_registration():
+    if session.get('logged_in') == True and session.get('type') == 'owner':
+        if request.method == 'POST':
+            return redirect(url_for('homepage'))
+        else:
+            return render_template("service_registration.html")
+    else:
+        return redirect(url_for('homepage'))
+
 @app.route('/marketplace', methods = ['GET', 'POST'])
 def marketplace():
     if not session.get('logged_in'):
