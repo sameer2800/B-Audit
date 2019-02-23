@@ -28,10 +28,11 @@
     </ul>
   </div>
   </nav>
+  <h2 class="text-right">Wallet: 0 CS</h2>
   <h2> Ongoing Services</h2>
   <div class = "row">
   {% for service in ongoing_services %}
-  <div class="card col-md-6">
+  <div class="card col-md-2">
     <div id = "service_registration_form">
         <form method="POST">
         <input type="hidden" name="id" value="{{service[0]}}"
@@ -78,7 +79,7 @@
   <h2> Done Services</h2>
   <div class = "row">
   {% for service in done_services %}
-  <div class="card col-md-6">
+  <div class="card col-md-2">
     <p> Owner: {{service[1]}} </p>
     <p> House ID: {{service[2]}}</p>
     <p> Device ID: {{service[3]}} </p>

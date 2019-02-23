@@ -20,11 +20,11 @@
 function display(status) {
   if (status == 'none') {
     document.getElementById("house_registration_form").style.display = 'none';
-    document.getElementById('register').style.display = 'block'
+    document.getElementById('register').style.display = 'block';
   }
   else {
     document.getElementById("house_registration_form").style.display = 'block';
-    document.getElementById('register').style.display = 'none'
+    document.getElementById('register').style.display = 'none';
   }
 }
 </script>
@@ -41,10 +41,11 @@ function display(status) {
   </div>
 </nav>
   {% if houses  %}
+      <h2 class="text-right">Wallet: 0 CS</h2>
       <h2>Houses</h2>
       <div class="row">
         {% for house in houses%}
-        <div class="card col-md-6">
+        <div class="card col-md-3">
           <form method="POST">
           <input type="hidden" name="house_id" value="{{house[0]}}" />
           <button type="submit" name = "cancel_house" class="close btn btn-secondary ml-auto" aria-label="Close">
@@ -63,7 +64,7 @@ function display(status) {
       <h2> Applied Services</h2>
       <div class="row">
       {% for service in applied_services %}
-      <div class = "card col-md-6">
+      <div class = "card col-md-2">
           <form method="POST">
           <input type="hidden" name="id" value="{{service[0]}}">
           <div>
@@ -109,7 +110,7 @@ function display(status) {
       <h2> Ongoing Services</h2>
       <div class="row">
       {% for service in ongoing_services %}
-        <div class = "card col-md-6">
+        <div class = "card col-md-2">
           <div class = "card-body">
               <p> Owner: {{service[1]}} </p>
               <p> House ID: {{service[2]}}</p>
