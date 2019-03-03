@@ -8,13 +8,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-  <style>
-  #servicebox {
-  border: 15px solid green;
-  padding: 15px;
-  margin: 15px;
-  }
-  </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-sm bg-light">
@@ -32,7 +25,7 @@
   <h2> Ongoing Services</h2>
   <div class = "row">
   {% for service in ongoing_services %}
-  <div class="card col-md-2">
+  <div class="card bg-light col-md-2">
     <div id = "service_registration_form">
         <form method="POST">
         <input type="hidden" name="id" value="{{service[0]}}"
@@ -79,7 +72,7 @@
   <h2> Done Services</h2>
   <div class = "row">
   {% for service in done_services %}
-  <div class="card col-md-2">
+  <div class="card bg-light col-md-2">
     <p> Owner: {{service[1]}} </p>
     <p> House ID: {{service[2]}}</p>
     <p> Device ID: {{service[3]}} </p>

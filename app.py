@@ -6,8 +6,21 @@ from contractor_registration import Contractor
 from house_registration import House
 from device_registration import Device
 from service_registration import Service
+import base64
+import re
 import sqlite3
 import os
+import random
+import string
+
+from thrift.protocol.TBinaryProtocol import TBinaryProtocol
+from thrift.transport.TSocket import TSocket
+import base58
+
+from api.API import Client
+
+publickey = '7pjhJ5yVKUmG3Cci67QrW97jPFRLi5fgkwaxDGDK7E86'
+publickeybytes = base58.b58decode(publickey)
 
 app = Flask(__name__)
 
@@ -101,10 +114,17 @@ def owner(username):
     if session.get('username') == username and session.get('type') == 'owner':
         if request.method == 'POST':
             if isinstance(request.form.get("register_house"), unicode):
+                data = re.sub('^data:image/.+;base64,', '', request.form['houseimage'])
+                binary_data = base64.b64decode(data)
+                imagename = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)) + ".jpg"
+                fd = open('./static/images/house_images/' + imagename, 'wb')
+                fd.write(binary_data)
+                fd.close()
+
                 engine = create_engine('sqlite:///houses.db', echo=True)
                 Session = sessionmaker(bind=engine)
                 db_session = Session()
-                house = House(str(username), str(request.form["name"]), str(request.form["location"]))
+                house = House(str(username), str(request.form["name"]), str(request.form["location"]), imagename)
                 db_session.add(house)
                 db_session.commit()
                 db_session.close()
@@ -196,10 +216,17 @@ def house(number):
     if (result[0][0] == session.get('username') and session.get('type') == 'owner'):
         if request.method == 'POST':
             if isinstance(request.form.get("register_device"), unicode):
+                data = re.sub('^data:image/.+;base64,', '', request.form['deviceimage'])
+                binary_data = base64.b64decode(data)
+                imagename = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)) + ".jpg"
+                fd = open('./static/images/device_images/' + imagename, 'wb')
+                fd.write(binary_data)
+                fd.close()
+
                 engine = create_engine('sqlite:///devices.db', echo=True)
                 Session = sessionmaker(bind=engine)
                 db_session = Session()
-                device = Device(str(request.form["name"]), int(number), "working")
+                device = Device(str(request.form["name"]), int(number), "working", imagename)
                 db_session.add(device)
                 db_session.commit()
                 db_session.close()
@@ -311,5 +338,6 @@ def logout():
 
 
 if __name__ == "__main__":
+    print(publickey)
     app.secret_key = os.urandom(12)
     app.run(debug=True)
