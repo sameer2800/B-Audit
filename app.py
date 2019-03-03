@@ -12,15 +12,12 @@ import sqlite3
 import os
 import random
 import string
+import ed25519
 
 from thrift.protocol.TBinaryProtocol import TBinaryProtocol
 from thrift.transport.TSocket import TSocket
 import base58
-
 from api.API import Client
-
-publickey = '7pjhJ5yVKUmG3Cci67QrW97jPFRLi5fgkwaxDGDK7E86'
-publickeybytes = base58.b58decode(publickey)
 
 app = Flask(__name__)
 
@@ -36,13 +33,17 @@ def owner_register():
     if request.method == 'POST':
         form = request.form
         if form["password"] == form["retypepassword"]:
+            signing_key, verifying_key = ed25519.create_keypair()
+            open(form["username"] + "-B-Audit-owner-key","wb").write(signing_key.to_bytes())
+            vkey_hex = verifying_key.to_ascii(encoding="hex")
             engine = create_engine('sqlite:///owners.db', echo=True)
             Session = sessionmaker(bind=engine)
             db_session = Session()
-            owner = Owner(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]))
+            owner = Owner(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]), vkey_hex)
             db_session.add(owner)
             db_session.commit()
             db_session.close()
+            print("New account generated!!! With wallet: " + str(vkey_hex))
             return redirect(url_for('owner_login'))
         else:
             return render_template("owner_register.html")
@@ -75,13 +76,17 @@ def contractor_register():
     if request.method == 'POST':
         form = request.form
         if form["password"] == form["retypepassword"]:
+            signing_key, verifying_key = ed25519.create_keypair()
+            open(form["username"] + "-B-Audit-contractor-key","wb").write(signing_key.to_bytes())
+            vkey_hex = verifying_key.to_ascii(encoding="hex")
             engine = create_engine('sqlite:///contractors.db', echo=True)
             Session = sessionmaker(bind=engine)
             db_session = Session()
-            contractor = Contractor(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]))
+            contractor = Contractor(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]), vkey_hex)
             db_session.add(contractor)
             db_session.commit()
             db_session.close()
+            print("New account generated!!! With wallet: " + str(vkey_hex))
             return redirect(url_for('contractor_login'))
         else:
             return render_template("contractor_register.html")
@@ -338,6 +343,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    print(publickey)
     app.secret_key = os.urandom(12)
-    app.run(debug=True)
+    app.run(debug=False)

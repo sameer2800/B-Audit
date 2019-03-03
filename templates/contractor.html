@@ -26,17 +26,18 @@
   <div class = "row">
   {% for service in ongoing_services %}
   <div class="card bg-light col-md-2">
-    <div id = "service_registration_form">
-        <form method="POST">
-        <input type="hidden" name="id" value="{{service[0]}}"
+      <form method="POST">
+        <input type="hidden" name="id" value="{{service[0]}}">
         <div>
           <label for="owner"> Owner: {{service[1]}} </label>
           <input type="hidden" name="owner" value="{{service[1]}}">
         </div>
+        <br>
         <div>
           <label for="house_id"> House ID: {{service[2]}} </label>
           <input type="hidden" name="house_id" value="{{service[2]}}">
         </div>
+        <br>
         <div>
           <label for="device_id"> Device ID: {{service[3]}} </label>
           <input type="hidden" name="device_id" value="{{service[3]}}">
@@ -64,8 +65,7 @@
         <br>
         <button type="submit" name="done" class="btn btn-primary">Done</button>
         <button type="submit" name="remove" class="btn btn-primary">Remove</button>
-        </form>
-    </div>
+      </form>
   </div>
   {% endfor %}
   </div>
@@ -80,6 +80,7 @@
     <p> Type: {{service[5]}} </p>
     <p> Cost: {{service[6]}} </p>
     <p> Status: {{service[7]}} </p>
+  </div>
   {% endfor %}
   </div>
 </body>

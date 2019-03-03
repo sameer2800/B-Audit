@@ -1,2 +1,4 @@
+ed25519
 flask
+sqlalchemy
 sqlite3
