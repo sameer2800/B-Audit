@@ -9,6 +9,16 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
 </head>
+<script>
+function copytoclipboard(){
+  const el = document.createElement('textarea');
+  el.value = '{{wallet}}';
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+}
+</script>
 <body>
   <nav class="navbar navbar-expand-sm bg-light">
   <div class="container-fluid">
@@ -21,7 +31,7 @@
     </ul>
   </div>
   </nav>
-  <h2 class="text-right">Wallet: 0 CS</h2>
+  <button class = "btn btn-primary float-right" data-toggle = "tooltip" data-placement = "bottom" title = "Click to copy wallet address" onclick = "copytoclipboard()">Wallet: {{balance}} CS</button>
   <h2> Ongoing Services</h2>
   <div class = "row">
   {% for service in ongoing_services %}

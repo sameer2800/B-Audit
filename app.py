@@ -55,13 +55,14 @@ def owner_login():
     if request.method == 'POST' and session.get('logged_in') is None:
         conn = sqlite3.connect('owners.db')
         cursor = conn.cursor()
-        query = 'SELECT password from owners where username = \''+str(request.form["username"])+'\''
+        query = 'SELECT wallet, password from owners where username = \''+str(request.form["username"])+'\''
         result = cursor.execute(query).fetchall()
         cursor.close()
-        if result[0][0] == request.form["password"]:
+        if result[0][1] == request.form["password"]:
             session['logged_in'] = True
             session['type'] = 'owner'
             session['username'] = request.form["username"]
+            session['wallet'] = result[0][0]
             return redirect(url_for('owner', username = request.form["username"]))
         else:
             return render_template("owner_login.html")
@@ -98,13 +99,14 @@ def contractor_login():
     if request.method == 'POST' and session.get('logged_in') is None:
         conn = sqlite3.connect('contractors.db')
         cursor = conn.cursor()
-        query = 'SELECT password from contractors where username = \''+str(request.form["username"])+'\''
+        query = 'SELECT wallet, password from contractors where username = \''+str(request.form["username"])+'\''
         result = cursor.execute(query).fetchall()
         cursor.close()
-        if result[0][0] == request.form["password"]:
+        if result[0][1] == request.form["password"]:
             session['logged_in'] = True
             session['type'] = 'contractor'
             session['username'] = request.form["username"]
+            session['wallet']  = result[0][0]
             return redirect(url_for('contractor', username = request.form["username"]))
         else:
             return render_template("contractor_login.html")
@@ -179,7 +181,9 @@ def owner(username):
 
         cursor.close()
 
-        return render_template("owner.html", username = username, houses = houses, applied_services = applied_services, ongoing_services = ongoing_services)
+        balance = 0
+
+        return render_template("owner.html", username = username, wallet = session['wallet'], balance = balance, houses = houses, applied_services = applied_services, ongoing_services = ongoing_services)
     else:
         return redirect(url_for('homepage'))
 
@@ -206,7 +210,10 @@ def contractor(username):
         done_services = cursor.execute(query).fetchall()
 
         cursor.close()
-        return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services, username = username)
+
+        balance = 0
+
+        return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services, username = username, wallet = session['wallet'], balance = balance)
     else:
         return redirect(url_for('homepage'))
 

@@ -29,6 +29,15 @@ function uploadImage(){
      document.getElementById("houseimage").value = reader.result;
    };
 }
+
+function copytoclipboard(){
+  const el = document.createElement('textarea');
+  el.value = '{{wallet}}';
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+}
 </script>
 <body onload="display('none')">
   <nav class="navbar navbar-expand-sm bg-light">
@@ -42,8 +51,8 @@ function uploadImage(){
     </ul>
   </div>
 </nav>
+<button class = "btn btn-primary float-right" data-toggle = "tooltip" data-placement = "bottom" title = "Click to copy wallet address" onclick = "copytoclipboard()">Wallet: {{balance}} CS</button>
   {% if houses  %}
-      <h2 class="text-right">Wallet: 0 CS</h2>
       <h2>Houses</h2>
       <div class="row">
         {% for house in houses%}
