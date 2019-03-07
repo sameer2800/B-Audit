@@ -15,12 +15,14 @@ class Contractor(Base):
     email = Column(String, unique=True)
     username = Column(String, unique=True)
     password = Column(String, unique=True)
+    wallet = Column(String, unique=True)
 
-    def __init__(self, name, email, username, password):
+    def __init__(self, name, email, username, password, wallet):
 
         self.name = name
         self.email = email
         self.username = username
         self.password = password
+        self.wallet = wallet
 
 Base.metadata.create_all(engine)

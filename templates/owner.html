@@ -8,13 +8,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-  <style>
-  #housebox {
-  border: 15px solid green;
-  padding: 15px;
-  margin: 15px;
-  }
-  </style>
 </head>
 <script>
 function display(status) {
@@ -26,6 +19,24 @@ function display(status) {
     document.getElementById("house_registration_form").style.display = 'block';
     document.getElementById('register').style.display = 'none';
   }
+}
+
+function uploadImage(){
+  var image = document.getElementById("image");
+  var reader = new FileReader();
+  reader.readAsDataURL(image.files[0]);
+  reader.onload = function () {
+     document.getElementById("houseimage").value = reader.result;
+   };
+}
+
+function copytoclipboard(){
+  const el = document.createElement('textarea');
+  el.value = '{{wallet}}';
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
 }
 </script>
 <body onload="display('none')">
@@ -40,19 +51,19 @@ function display(status) {
     </ul>
   </div>
 </nav>
+<button class = "btn btn-primary float-right" data-toggle = "tooltip" data-placement = "bottom" title = "Click to copy wallet address" onclick = "copytoclipboard()">Wallet: {{balance}} CS</button>
   {% if houses  %}
-      <h2 class="text-right">Wallet: 0 CS</h2>
       <h2>Houses</h2>
       <div class="row">
         {% for house in houses%}
-        <div class="card col-md-3">
+        <div class="card bg-light col-md-3">
           <form method="POST">
           <input type="hidden" name="house_id" value="{{house[0]}}" />
           <button type="submit" name = "cancel_house" class="close btn btn-secondary ml-auto" aria-label="Close">
           <span aria-hidden="true">&times;</span>
           </button>
           </form>
-          <img class="card-img-top" src="/static/images/house_images/house_{{house[0]}}.jpg" alt="House image" style="width:100%">
+          <img class="card-img-top" src="/static/images/house_images/{{house[4]}}" alt="House image" style="width:100%">
           <div class="card-body">
             <h4 class="card-title">{{house[2]}}</h4>
             <p> Location: {{house[3]}} </p>
@@ -64,7 +75,7 @@ function display(status) {
       <h2> Applied Services</h2>
       <div class="row">
       {% for service in applied_services %}
-      <div class = "card col-md-2">
+      <div class = "card bg-light col-md-2">
           <form method="POST">
           <input type="hidden" name="id" value="{{service[0]}}">
           <div>
@@ -73,7 +84,7 @@ function display(status) {
           </div>
           <br>
           <div>
-            <label for="owner"> House ID: {{service[2]}} </label>
+            <label for="house_id"> House ID: {{service[2]}} </label>
             <input type="hidden" name="house_id" value="{{service[2]}}">
           </div>
           <br>
@@ -110,7 +121,7 @@ function display(status) {
       <h2> Ongoing Services</h2>
       <div class="row">
       {% for service in ongoing_services %}
-        <div class = "card col-md-2">
+        <div class = "card bg-light col-md-2">
           <div class = "card-body">
               <p> Owner: {{service[1]}} </p>
               <p> House ID: {{service[2]}}</p>
@@ -132,15 +143,21 @@ function display(status) {
   </div>
   <div id = "house_registration_form">
   <form action="{{username}}" method="POST">
-  <div>
-    <label for="name"> Name:</label>
-    <input name="name">
-  </div>
-  <br>
-  <div>
-    <label for="location">Location:</label>
-    <input name="location">
-  </div>
+    <div>
+      <label for="name"> House Name:</label>
+      <input name="name">
+    </div>
+    <div>
+      <label for="location"> House Location:</label>
+      <input name="location">
+    </div>
+    <div>
+      <label for="image"> House Image:</label>
+      <input id = "image" type = "file" accept = "image/*" name="image" onchange="uploadImage()">
+    </div>
+    <div>
+      <input id = "houseimage" type = "hidden" name = "houseimage" value = "">
+    </div>
   <br>
   <button type="submit" name="register_house" class="btn btn-primary">Register</button>
   </form>

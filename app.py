@@ -6,8 +6,18 @@ from contractor_registration import Contractor
 from house_registration import House
 from device_registration import Device
 from service_registration import Service
+import base64
+import re
 import sqlite3
 import os
+import random
+import string
+import ed25519
+
+from thrift.protocol.TBinaryProtocol import TBinaryProtocol
+from thrift.transport.TSocket import TSocket
+import base58
+from api.API import Client
 
 app = Flask(__name__)
 
@@ -23,13 +33,17 @@ def owner_register():
     if request.method == 'POST':
         form = request.form
         if form["password"] == form["retypepassword"]:
+            signing_key, verifying_key = ed25519.create_keypair()
+            open(form["username"] + "-B-Audit-owner-key","wb").write(signing_key.to_bytes())
+            vkey_hex = verifying_key.to_ascii(encoding="hex")
             engine = create_engine('sqlite:///owners.db', echo=True)
             Session = sessionmaker(bind=engine)
             db_session = Session()
-            owner = Owner(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]))
+            owner = Owner(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]), vkey_hex)
             db_session.add(owner)
             db_session.commit()
             db_session.close()
+            print("New account generated!!! With wallet: " + str(vkey_hex))
             return redirect(url_for('owner_login'))
         else:
             return render_template("owner_register.html")
@@ -41,13 +55,14 @@ def owner_login():
     if request.method == 'POST' and session.get('logged_in') is None:
         conn = sqlite3.connect('owners.db')
         cursor = conn.cursor()
-        query = 'SELECT password from owners where username = \''+str(request.form["username"])+'\''
+        query = 'SELECT wallet, password from owners where username = \''+str(request.form["username"])+'\''
         result = cursor.execute(query).fetchall()
         cursor.close()
-        if result[0][0] == request.form["password"]:
+        if result[0][1] == request.form["password"]:
             session['logged_in'] = True
             session['type'] = 'owner'
             session['username'] = request.form["username"]
+            session['wallet'] = result[0][0]
             return redirect(url_for('owner', username = request.form["username"]))
         else:
             return render_template("owner_login.html")
@@ -62,13 +77,17 @@ def contractor_register():
     if request.method == 'POST':
         form = request.form
         if form["password"] == form["retypepassword"]:
+            signing_key, verifying_key = ed25519.create_keypair()
+            open(form["username"] + "-B-Audit-contractor-key","wb").write(signing_key.to_bytes())
+            vkey_hex = verifying_key.to_ascii(encoding="hex")
             engine = create_engine('sqlite:///contractors.db', echo=True)
             Session = sessionmaker(bind=engine)
             db_session = Session()
-            contractor = Contractor(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]))
+            contractor = Contractor(str(form["name"]), str(form["emailaddress"]), str(form["username"]), str(form["password"]), vkey_hex)
             db_session.add(contractor)
             db_session.commit()
             db_session.close()
+            print("New account generated!!! With wallet: " + str(vkey_hex))
             return redirect(url_for('contractor_login'))
         else:
             return render_template("contractor_register.html")
@@ -80,13 +99,14 @@ def contractor_login():
     if request.method == 'POST' and session.get('logged_in') is None:
         conn = sqlite3.connect('contractors.db')
         cursor = conn.cursor()
-        query = 'SELECT password from contractors where username = \''+str(request.form["username"])+'\''
+        query = 'SELECT wallet, password from contractors where username = \''+str(request.form["username"])+'\''
         result = cursor.execute(query).fetchall()
         cursor.close()
-        if result[0][0] == request.form["password"]:
+        if result[0][1] == request.form["password"]:
             session['logged_in'] = True
             session['type'] = 'contractor'
             session['username'] = request.form["username"]
+            session['wallet']  = result[0][0]
             return redirect(url_for('contractor', username = request.form["username"]))
         else:
             return render_template("contractor_login.html")
@@ -101,10 +121,17 @@ def owner(username):
     if session.get('username') == username and session.get('type') == 'owner':
         if request.method == 'POST':
             if isinstance(request.form.get("register_house"), unicode):
+                data = re.sub('^data:image/.+;base64,', '', request.form['houseimage'])
+                binary_data = base64.b64decode(data)
+                imagename = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)) + ".jpg"
+                fd = open('./static/images/house_images/' + imagename, 'wb')
+                fd.write(binary_data)
+                fd.close()
+
                 engine = create_engine('sqlite:///houses.db', echo=True)
                 Session = sessionmaker(bind=engine)
                 db_session = Session()
-                house = House(str(username), str(request.form["name"]), str(request.form["location"]))
+                house = House(str(username), str(request.form["name"]), str(request.form["location"]), imagename)
                 db_session.add(house)
                 db_session.commit()
                 db_session.close()
@@ -154,7 +181,9 @@ def owner(username):
 
         cursor.close()
 
-        return render_template("owner.html", username = username, houses = houses, applied_services = applied_services, ongoing_services = ongoing_services)
+        balance = 0
+
+        return render_template("owner.html", username = username, wallet = session['wallet'], balance = balance, houses = houses, applied_services = applied_services, ongoing_services = ongoing_services)
     else:
         return redirect(url_for('homepage'))
 
@@ -181,7 +210,10 @@ def contractor(username):
         done_services = cursor.execute(query).fetchall()
 
         cursor.close()
-        return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services, username = username)
+
+        balance = 0
+
+        return render_template("contractor.html", ongoing_services = ongoing_services, done_services = done_services, username = username, wallet = session['wallet'], balance = balance)
     else:
         return redirect(url_for('homepage'))
 
@@ -196,10 +228,17 @@ def house(number):
     if (result[0][0] == session.get('username') and session.get('type') == 'owner'):
         if request.method == 'POST':
             if isinstance(request.form.get("register_device"), unicode):
+                data = re.sub('^data:image/.+;base64,', '', request.form['deviceimage'])
+                binary_data = base64.b64decode(data)
+                imagename = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)) + ".jpg"
+                fd = open('./static/images/device_images/' + imagename, 'wb')
+                fd.write(binary_data)
+                fd.close()
+
                 engine = create_engine('sqlite:///devices.db', echo=True)
                 Session = sessionmaker(bind=engine)
                 db_session = Session()
-                device = Device(str(request.form["name"]), int(number), "working")
+                device = Device(str(request.form["name"]), int(number), "working", imagename)
                 db_session.add(device)
                 db_session.commit()
                 db_session.close()
@@ -312,4 +351,4 @@ def logout():
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-    app.run(debug=True)
+    app.run(debug=False)

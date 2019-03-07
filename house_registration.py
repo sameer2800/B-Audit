@@ -14,11 +14,13 @@ class House(Base):
     owner = Column(String)
     name = Column(String)
     location = Column(String)
+    image = Column(String)
 
-    def __init__(self, owner, name, location):
+    def __init__(self, owner, name, location, image):
 
         self.owner = owner
         self.name = name
         self.location = location
+        self.image = image
 
 Base.metadata.create_all(engine)

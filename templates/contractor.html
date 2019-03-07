@@ -8,14 +8,17 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-  <style>
-  #servicebox {
-  border: 15px solid green;
-  padding: 15px;
-  margin: 15px;
-  }
-  </style>
 </head>
+<script>
+function copytoclipboard(){
+  const el = document.createElement('textarea');
+  el.value = '{{wallet}}';
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+}
+</script>
 <body>
   <nav class="navbar navbar-expand-sm bg-light">
   <div class="container-fluid">
@@ -28,22 +31,23 @@
     </ul>
   </div>
   </nav>
-  <h2 class="text-right">Wallet: 0 CS</h2>
+  <button class = "btn btn-primary float-right" data-toggle = "tooltip" data-placement = "bottom" title = "Click to copy wallet address" onclick = "copytoclipboard()">Wallet: {{balance}} CS</button>
   <h2> Ongoing Services</h2>
   <div class = "row">
   {% for service in ongoing_services %}
-  <div class="card col-md-2">
-    <div id = "service_registration_form">
-        <form method="POST">
-        <input type="hidden" name="id" value="{{service[0]}}"
+  <div class="card bg-light col-md-2">
+      <form method="POST">
+        <input type="hidden" name="id" value="{{service[0]}}">
         <div>
           <label for="owner"> Owner: {{service[1]}} </label>
           <input type="hidden" name="owner" value="{{service[1]}}">
         </div>
+        <br>
         <div>
           <label for="house_id"> House ID: {{service[2]}} </label>
           <input type="hidden" name="house_id" value="{{service[2]}}">
         </div>
+        <br>
         <div>
           <label for="device_id"> Device ID: {{service[3]}} </label>
           <input type="hidden" name="device_id" value="{{service[3]}}">
@@ -71,15 +75,14 @@
         <br>
         <button type="submit" name="done" class="btn btn-primary">Done</button>
         <button type="submit" name="remove" class="btn btn-primary">Remove</button>
-        </form>
-    </div>
+      </form>
   </div>
   {% endfor %}
   </div>
   <h2> Done Services</h2>
   <div class = "row">
   {% for service in done_services %}
-  <div class="card col-md-2">
+  <div class="card bg-light col-md-2">
     <p> Owner: {{service[1]}} </p>
     <p> House ID: {{service[2]}}</p>
     <p> Device ID: {{service[3]}} </p>
@@ -87,6 +90,7 @@
     <p> Type: {{service[5]}} </p>
     <p> Cost: {{service[6]}} </p>
     <p> Status: {{service[7]}} </p>
+  </div>
   {% endfor %}
   </div>
 </body>
